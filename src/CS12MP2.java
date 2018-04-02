@@ -1,7 +1,5 @@
 
 import java.util.Scanner;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 public class CS12MP2 {
@@ -11,6 +9,7 @@ public class CS12MP2 {
 	public static Opponent opp;
 	public static Background bg;
 	public static Scanner s;
+	public static ChoiceBoxes c;
 
 	public static void main(String[] args) {
 		hero = new Hero();
@@ -18,12 +17,14 @@ public class CS12MP2 {
 		bg = new Background();
 		boolean end = false;
 		
-
+		opp = opponents.getOpponent();
+		c = new ChoiceBoxes();
 		s = new Scanner(System.in);
 		final MarioWindow w1 = new MarioWindow();
 		w1.add(bg);
 		w1.add(hero);
-		w1.add(opp);
+		w1.add(opponents);
+		w1.add(c);
 		(new Thread() {
 			public void run() {
 				w1.startGame();
@@ -32,9 +33,6 @@ public class CS12MP2 {
 
 
 		System.out.println("GAME START");
-
-		
-		
 
 		while(!end)
 		{
@@ -58,53 +56,56 @@ public class CS12MP2 {
 			char choice;
 			if(!hero.skipTurn)
 			{
-				System.out.println("HERO HP: " + hero.hp);
-				System.out.println("OPPONENT HP: " + opp.hp);
-				System.out.println("MOVE LIST");
-				System.out.println("A. Basic Attack");
-				System.out.println("B. Special Attack");
-				System.out.println("C. Reckless Attack");
-				System.out.println("D. Heal");
-				System.out.println("E. Reload");
-				choice = s.next().charAt(0);
-				
+				c.visible = true;
+				MarioWindow.delay(1);
+				choice = c.status;
 				switch(Character.toUpperCase(choice)) 
 				{
 					case 'A': 
+						c.visible = false;
 						damage = hero.basicAttack();
 						break;
 					case 'B':
+						c.visible = false;
 						damage = hero.specialAttack();
 						break;
 					case 'C':
+						c.visible = false;
 						damage = hero.recklessAttack();
 						break;
 					case 'D':
+						c.visible = false;
 						hero.heal();
 						damage =0;
 						break;
 					case 'E':
+						c.visible = false;
 						hero.reload();
 						damage = 0;
 						break;
 				}
+				c.status = ' ';
 				opp.hp -= damage;
 			}
 			else
 			{
 				System.out.println("You skip a turn");
+				hero.displaySkipTurn();
 				hero.skipTurn = false;
 			}
-
-			delay(5);
-			if(!opp.skipTurn)
-				hero.hp -= opp.pickMove();
-			else
+			if(!c.visible)
 			{
-				System.out.println("Opponent skips a turn");
-				opp.skipTurn = false;
+				delay(5);
+				if(!opp.skipTurn)
+					hero.hp -= opp.pickMove();
+				else
+				{
+					System.out.println("Opponent skips a turn");
+					opp.displaySkipTurn();
+					opp.skipTurn = false;
+				}
+				delay(5);
 			}
-			delay(5);
 			
 			if(hero.hp <= 0 || opp.hp <= 0)
 			{

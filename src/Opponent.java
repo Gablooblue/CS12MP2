@@ -7,15 +7,15 @@ import java.util.TimerTask;
 
 
 
-public class Opponent extends GameObject{
+public class Opponent {
 	int hp, bullets, chance;
 	boolean skipTurn;
 	Timer aniTimer;
 	Random r;
 	BufferedImage OpponentAlive;
 	BufferedImage OpponentDead;
-	BufferedImage SingkoImage;
-	boolean basic,special,reckless,heal,reload = false;
+	BufferedImage RecklessImage;
+	boolean basic,special,reckless,heal,reload,display = false;
 	boolean timerSet, first;
 	String name;
 
@@ -27,51 +27,10 @@ public class Opponent extends GameObject{
 		r = new Random();
 		OpponentAlive = MarioWindow.getImage(imgAlive);
 		OpponentDead= MarioWindow.getImage(imgDead);
-		SingkoImage = MarioWindow.getImage("singko.png");
+		RecklessImage= MarioWindow.getImage("singko.png");
 		aniTimer = new Timer();
 		timerSet = false;
 		first = true;
-	}
-	public void paint(Graphics2D g)
-	{
-		g.setColor(Color.WHITE);
-		g.drawString("HP: " + hp, 650, 50);
-		g.drawString("Energy: " + bullets, 650, 75);
-		if(this.hp > 0)
-		{
-			g.drawImage(OpponentAlive, 425, 200, null);
-		}
-		else
-		{
-			g.drawImage(OpponentDead, 425, 200, null);
-		}
-		
-		if(basic)
-		{
-			displayAction(g, "Quiz");
-		}
-		if(special)
-		{
-			displayAction(g, "Long Exam");
-		}
-		if(reckless)
-		{
-			displayAction(g, "Release Grades");
-			g.drawImage(SingkoImage, 375, 200, null);
-			g.drawImage(SingkoImage, 400, 150, null);
-			g.drawImage(SingkoImage, 395, 250, null);
-			g.drawImage(SingkoImage, 410, 300, null);
-			g.drawImage(SingkoImage, 390, 330, null);
-			g.drawImage(SingkoImage, 360, 370 , null);
-		}
-		if(heal)
-		{
-			displayAction(g, "Lecture");
-		}
-		if(reload)
-		{
-			displayAction(g, "End class");
-		}
 	}
 	public int pickMove() 
 	{
@@ -99,27 +58,6 @@ public class Opponent extends GameObject{
 			}
 		}
 		return 0;
-	}
-	private void displayAction( Graphics2D g, String text)
-	{
-			text = "UP used " + text; 
-			g.drawString(text, 520, 200);
-			if(!timerSet)
-			{
-				aniTimer.schedule(new TimerTask() 
-				{
-					@Override
-					public void run() 
-					{
-						if(!first)
-							resetAnimations();
-						else
-							first = false;
-					}
-					
-				},0, 5000);
-				timerSet = true;
-			}
 	}
 	
 	public int basicAttack()
@@ -178,19 +116,24 @@ public class Opponent extends GameObject{
 		}
 	}
 	
+	public void displaySkipTurn()
+	{
+		display = true;
+	}
 	public void reload()
 	{
 		System.out.println(name + " reloaded");
 		reload = true;
 		this.bullets = 6;
 	}
-	private void resetAnimations()
+	public void resetAnimations()
 	{
 		basic = false;
 		special = false;
 		reckless =  false;
 		heal = false;
 		reload = false;
+		display = false;
 		timerSet = false;
 
 		first = true;

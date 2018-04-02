@@ -16,7 +16,7 @@ public class Hero extends GameObject{
 	
 	int hp, bullets, chance;
 	boolean skipTurn;
-	boolean basic,special,reckless,heal,reload = false;
+	boolean basic,special,reckless,heal,reload,display = false;
 	boolean timerSet, first;
 	Random r;
 	public Hero() 
@@ -36,6 +36,10 @@ public class Hero extends GameObject{
 		first = true;
 	}
 	
+	public void displaySkipTurn()
+	{
+		display = true;
+	}
 	public void paint(Graphics2D g)
 	{
 		g.setColor(Color.WHITE);
@@ -77,11 +81,20 @@ public class Hero extends GameObject{
 		{
 			displayAction(g, "Sleep");
 		}
+		if(display)
+		{
+			displayText(g, "Gab skips a turn");
+		}
 	}
 	
 	private void displayAction( Graphics2D g, String text)
 	{
 			text = "Gab used " + text; 
+			displayText(g, text);
+	}
+	
+	public void displayText(Graphics2D g, String text)
+	{
 			g.drawString(text, 150, 200);
 			if(!timerSet)
 			{
@@ -171,6 +184,7 @@ public class Hero extends GameObject{
 		reckless =  false;
 		heal = false;
 		reload = false;
+		display = false;
 		timerSet = false;
 
 		first = true;
